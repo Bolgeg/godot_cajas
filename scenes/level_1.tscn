@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bexeeutqnpi4a"]
+
+[node name="Level1" type="Node3D"]
+
+[node name="GridMap" type="GridMap" parent="."]
+cell_size = Vector3(1, 1, 1)
+cell_center_x = false
+cell_center_y = false
+cell_center_z = false
