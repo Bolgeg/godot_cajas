@@ -1,7 +1,25 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckqyuudc45nb"]
+[gd_scene load_steps=3 format=3 uid="uid://ckqyuudc45nb"]
 
 [ext_resource type="PackedScene" uid="uid://bexeeutqnpi4a" path="res://scenes/level_1.tscn" id="1_uwrxv"]
+
+[sub_resource type="Environment" id="Environment_uwrxv"]
+background_mode = 1
+background_color = Color(0.345098, 0.776471, 1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.7
+reflected_light_source = 1
 
 [node name="Game" type="Node3D"]
 
 [node name="Level1" parent="." instance=ExtResource("1_uwrxv")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9, 4, 13)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.905206, 0.369637, -0.209693, 0, 0.493426, 0.869788, 0.424974, -0.787337, 0.446652, 0, 0, 16)
+light_energy = 0.7
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_uwrxv")

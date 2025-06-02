@@ -1,3 +1,219 @@
-[gd_scene format=3 uid="uid://btse06kddlbmh"]
+[gd_scene load_steps=22 format=3 uid="uid://btse06kddlbmh"]
+
+[ext_resource type="ArrayMesh" uid="uid://beck50vy4pgl5" path="res://assets/meshes/life_crate_Cube.res" id="3_277al"]
+[ext_resource type="ArrayMesh" uid="uid://bvip130ikhsi4" path="res://assets/meshes/mask_crate_Cube.res" id="4_2obls"]
+[ext_resource type="ArrayMesh" uid="uid://cmbglmcchjykg" path="res://assets/meshes/checkpoint_crate_Cube.res" id="5_ekd7i"]
+[ext_resource type="ArrayMesh" uid="uid://dqfl2vsxdbtvu" path="res://assets/meshes/arrow_crate_Cube.res" id="6_s16bc"]
+[ext_resource type="ArrayMesh" uid="uid://cw6mqsorcgq37" path="res://assets/meshes/bounce_crate_Cube.res" id="7_p87cq"]
+[ext_resource type="ArrayMesh" uid="uid://cgjwritcgkdqp" path="res://assets/meshes/nitro_crate_Cube.res" id="8_2a5bj"]
+[ext_resource type="ArrayMesh" uid="uid://dx0jguc4ukfrc" path="res://assets/meshes/tnt_crate_Cube.res" id="9_bb58q"]
+[ext_resource type="ArrayMesh" uid="uid://b3nenwiiyru68" path="res://assets/meshes/tnt_crate_3_Cube.res" id="10_w6i52"]
+[ext_resource type="ArrayMesh" uid="uid://c4vmtnhll7eu4" path="res://assets/meshes/tnt_crate_2_Cube.res" id="11_ettop"]
+[ext_resource type="ArrayMesh" uid="uid://n5sb4squnqs5" path="res://assets/meshes/tnt_crate_1_Cube.res" id="12_0vwmm"]
+[ext_resource type="ArrayMesh" uid="uid://cl2x02ebsfg8e" path="res://assets/meshes/metal_crate_Cube.res" id="13_0vwmm"]
+[ext_resource type="ArrayMesh" uid="uid://bcfj88opu0nhc" path="res://assets/meshes/metal_checkpoint_crate_Cube.res" id="14_p0x78"]
+[ext_resource type="ArrayMesh" uid="uid://btywfwmhvypn4" path="res://assets/meshes/metal_arrow_crate_Cube.res" id="15_sy41q"]
+[ext_resource type="ArrayMesh" uid="uid://dicv65cvgm105" path="res://assets/meshes/metal_activator_crate_Cube.res" id="16_7v0kn"]
+[ext_resource type="ArrayMesh" uid="uid://cf7l4dgsjhd8h" path="res://assets/meshes/green_metal_crate_Cube.res" id="17_sy41q"]
+[ext_resource type="ArrayMesh" uid="uid://dj6rm128u5rd6" path="res://assets/meshes/green_metal_detonator_crate_Cube.res" id="18_7v0kn"]
+[ext_resource type="ArrayMesh" uid="uid://c6o5b4ii0ma0" path="res://assets/meshes/wireframe_crate_Cube.res" id="19_7v0kn"]
+[ext_resource type="ArrayMesh" uid="uid://82x0anl2a8he" path="res://assets/meshes/ice_Cube.res" id="20_w04dc"]
+[ext_resource type="ArrayMesh" uid="uid://bame661f5fcys" path="res://assets/meshes/wood_crate_Cube.res" id="20_ydnwn"]
+[ext_resource type="ArrayMesh" uid="uid://bvqga8cyfssg7" path="res://assets/meshes/snow_Cube.res" id="21_xklue"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c6yqp"]
 
 [node name="TerrainMeshes" type="Node3D"]
+
+[node name="WoodCrateCube" type="MeshInstance3D" parent="."]
+mesh = ExtResource("20_ydnwn")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="WoodCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WoodCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="LifeCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+mesh = ExtResource("3_277al")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="LifeCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LifeCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="MaskCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+mesh = ExtResource("4_2obls")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MaskCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MaskCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="CheckpointCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
+mesh = ExtResource("5_ekd7i")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="CheckpointCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CheckpointCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="ArrowCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+mesh = ExtResource("6_s16bc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="ArrowCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ArrowCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="BounceCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 0)
+mesh = ExtResource("7_p87cq")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="BounceCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BounceCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="NitroCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = ExtResource("8_2a5bj")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="NitroCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NitroCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="TntCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+mesh = ExtResource("9_bb58q")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="TntCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TntCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="TntCrate3Cube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -2)
+mesh = ExtResource("10_w6i52")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="TntCrate3Cube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TntCrate3Cube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="TntCrate2Cube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+mesh = ExtResource("11_ettop")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="TntCrate2Cube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TntCrate2Cube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="TntCrate1Cube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -2)
+mesh = ExtResource("12_0vwmm")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="TntCrate1Cube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TntCrate1Cube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="MetalCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+mesh = ExtResource("13_0vwmm")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MetalCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MetalCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="MetalCheckpointCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -4)
+mesh = ExtResource("14_p0x78")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MetalCheckpointCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MetalCheckpointCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="MetalArrowCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+mesh = ExtResource("15_sy41q")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MetalArrowCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MetalArrowCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="MetalActivatorCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -4)
+mesh = ExtResource("16_7v0kn")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MetalActivatorCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MetalActivatorCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="GreenMetalCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+mesh = ExtResource("17_sy41q")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="GreenMetalCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GreenMetalCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="GreenMetalDetonatorCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -6)
+mesh = ExtResource("18_7v0kn")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="GreenMetalDetonatorCrateCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="GreenMetalDetonatorCrateCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="WireframeCrateCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -6)
+mesh = ExtResource("19_7v0kn")
+
+[node name="IceCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+mesh = ExtResource("20_w04dc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="IceCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="IceCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="SnowCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -8)
+mesh = ExtResource("21_xklue")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SnowCube"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SnowCube/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_c6yqp")
