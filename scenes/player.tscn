@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://debcxbiw2ijtj"]
+
+[ext_resource type="Texture2D" uid="uid://12p73ca08qh3" path="res://assets/imgs/bolgeg.png" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://c3wefpsvldd6b" path="res://scripts/player.gd" id="1_g2els"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g2els"]
+size = Vector3(0.6, 1.8, 1)
+
+[node name="Player" type="CharacterBody3D"]
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+floor_constant_speed = true
+script = ExtResource("1_g2els")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.5)
+shape = SubResource("BoxShape3D_g2els")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.95)
+centered = false
+offset = Vector2(-32, 0)
+pixel_size = 0.0313
+texture_filter = 1
+texture = ExtResource("1_3vyb7")
+region_enabled = true
+region_rect = Rect2(0, 0, 64, 64)
+
+[node name="SpinTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.5
+one_shot = true
+
+[node name="SpinCooldownTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
