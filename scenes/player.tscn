@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://c3wefpsvldd6b" path="res://scripts/player.gd" id="1_g2els"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_g2els"]
-size = Vector3(0.6, 1.8, 1)
+size = Vector3(0.6, 1.8, 0.8)
 
 [node name="Player" type="CharacterBody3D"]
 axis_lock_linear_z = true

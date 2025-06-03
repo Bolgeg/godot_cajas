@@ -1,5 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://ckqyuudc45nb"]
+[gd_scene load_steps=5 format=3 uid="uid://ckqyuudc45nb"]
 
+[ext_resource type="Script" uid="uid://deu87cnx3m41d" path="res://scripts/game.gd" id="1_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://bexeeutqnpi4a" path="res://scenes/level_1.tscn" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://debcxbiw2ijtj" path="res://scenes/player.tscn" id="2_yqjtg"]
 
@@ -12,6 +13,7 @@ ambient_light_energy = 0.7
 reflected_light_source = 1
 
 [node name="Game" type="Node3D"]
+script = ExtResource("1_lnu2h")
 
 [node name="Level1" parent="." instance=ExtResource("1_uwrxv")]
 
@@ -23,7 +25,10 @@ light_energy = 0.7
 environment = SubResource("Environment_uwrxv")
 
 [node name="Player" parent="." instance=ExtResource("2_yqjtg")]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 12)
+
+[connection signal="collided_with_block" from="Player" to="." method="_on_player_collided_with_block"]

@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+signal collided_with_block(block_position:Vector3i,vertical_normal:int)
+
 @onready var sprite:=%Sprite3D
 @onready var spin_timer:=%SpinTimer
 @onready var spin_cooldown_timer:=%SpinCooldownTimer
@@ -15,14 +17,21 @@ const GRAVITY:=20
 const MAX_FALLING_SPEED:=30
 
 const WALK_SPEED:=5.0
-const JUMP_SPEED:=7.0
+const JUMP_SPEED:=8.0
 
 var spinning:=false
+
+var bouncing:=false
+var crate_broken_by_jumping:=false
 
 func _ready() -> void:
 	update_animation_sprite(0)
 
-func _process(delta: float) -> void:
+func bounce(bounce_velocity:float):
+	bouncing=true
+	velocity.y=bounce_velocity
+
+func _physics_process(delta: float) -> void:
 	var new_animation:="idle"
 	
 	if spin_timer.is_stopped():
@@ -38,6 +47,7 @@ func _process(delta: float) -> void:
 	velocity.x=movement_axis*WALK_SPEED
 	
 	if not is_on_floor():
+		new_animation="idle"
 		velocity.y-=delta*GRAVITY
 		if velocity.y<-MAX_FALLING_SPEED:
 			velocity.y=-MAX_FALLING_SPEED
@@ -49,9 +59,8 @@ func _process(delta: float) -> void:
 		spin_cooldown_timer.start()
 		spinning=true
 	
-	if is_on_floor():
-		if Input.is_action_just_pressed("jump"):
-			velocity.y=JUMP_SPEED
+	if is_on_floor() and not bouncing and Input.is_action_just_pressed("jump"):
+		velocity.y=JUMP_SPEED
 	
 	if spinning:
 		new_animation="spin"
@@ -59,7 +68,26 @@ func _process(delta: float) -> void:
 	change_animation(new_animation)
 	update_animation_sprite(delta)
 	
+	var was_on_floor:=is_on_floor()
+	var old_velocity:=velocity
+	
 	move_and_slide()
+	
+	bouncing=false
+	crate_broken_by_jumping=false
+	
+	for index in get_slide_collision_count():
+		var collision:=get_slide_collision(index)
+		for j in collision.get_collision_count():
+			var block_position:Vector3i=Vector3i((collision.get_position(j)-collision.get_normal(j)*0.1).floor())
+			var normal:=collision.get_normal(j)
+			var vertical_normal:=0
+			if not was_on_floor:
+				if old_velocity.y<0 and normal.y>0.5:
+					vertical_normal=1
+				elif old_velocity.y>0 and normal.y<-0.5:
+					vertical_normal=-1
+			collided_with_block.emit(block_position,vertical_normal)
 
 func change_animation(new_animation:String):
 	if new_animation!=current_animation:
