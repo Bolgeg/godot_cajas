@@ -3,6 +3,7 @@ extends CharacterBody3D
 signal collided_with_block(block_position:Vector3i,vertical_normal:int)
 
 @onready var sprite:=%Sprite3D
+@onready var spin_area:=%SpinArea
 @onready var spin_timer:=%SpinTimer
 @onready var spin_cooldown_timer:=%SpinCooldownTimer
 
@@ -88,6 +89,26 @@ func _physics_process(delta: float) -> void:
 				elif old_velocity.y>0 and normal.y<-0.5:
 					vertical_normal=-1
 			collided_with_block.emit(block_position,vertical_normal)
+
+func get_spin_overlapping_block_positions()->Array:
+	if spinning:
+		return get_overlapping_block_positions(spin_area)
+	return []
+
+func get_overlapping_block_positions(area:Area3D)->Array:
+	var positions:=[]
+	for child in area.get_children():
+		if child is CollisionShape3D and child.shape is BoxShape3D:
+			var aabb:=AABB(child.global_position-child.shape.size/2-Vector3(1,1,1),child.shape.size+Vector3(1,1,1))
+			var minimum:=Vector3i(aabb.position.floor()+Vector3(1,1,1))
+			var maximum:=Vector3i(aabb.end.ceil())
+			for z in range(minimum.z,maximum.z):
+				for y in range(minimum.y,maximum.y):
+					for x in range(minimum.x,maximum.x):
+						var p:=Vector3i(x,y,z)
+						if not p in positions:
+							positions.append(p)
+	return positions
 
 func change_animation(new_animation:String):
 	if new_animation!=current_animation:
