@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://c4l8s4b5r6oki"]
+
+[ext_resource type="Script" uid="uid://dtdsk3ojru6vv" path="res://scripts/mask_in_map.gd" id="1_5l56x"]
+[ext_resource type="Texture2D" uid="uid://ds7xrocssjj0u" path="res://assets/imgs/mask_in_map.png" id="2_5l56x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8ynh5"]
+
+[node name="MaskInMap" type="Area3D"]
+script = ExtResource("1_5l56x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_8ynh5")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+unique_name_in_owner = true
+pixel_size = 0.0156
+texture = ExtResource("2_5l56x")
+
+[node name="GenerationTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="LevitationTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 2.0
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -23,12 +23,65 @@ const CRATE_TYPES:=[
 	"wireframe_crate",
 ]
 
+const APPLE_BLOCK_INDEX:=20
+const LIFE_BLOCK_INDEX:=21
+const MASK_BLOCK_INDEX:=22
+
 var level:Node3D
 var grid_map:GridMap
+var level_items:Node3D
 
 func _ready() -> void:
 	level=$Level1
 	grid_map=level.get_child(0)
+	level_items=level.get_child(1)
+	process_map()
+
+func process_map():
+	for apple_position in grid_map.get_used_cells_by_item(APPLE_BLOCK_INDEX):
+		grid_map.set_cell_item(apple_position,-1)
+		var apple:=preload("res://scenes/apple.tscn").instantiate()
+		level_items.add_child(apple)
+		apple.global_position=Vector3(apple_position)+Vector3(0.5,0.5,0.5)
+		apple.body_touched.connect(_on_body_touched_apple)
+	
+	for life_position in grid_map.get_used_cells_by_item(LIFE_BLOCK_INDEX):
+		grid_map.set_cell_item(life_position,-1)
+		var life:=preload("res://scenes/life.tscn").instantiate()
+		level_items.add_child(life)
+		life.global_position=Vector3(life_position)+Vector3(0.5,0.5,0.5)
+		life.body_touched.connect(_on_body_touched_life)
+	
+	for mask_position in grid_map.get_used_cells_by_item(MASK_BLOCK_INDEX):
+		grid_map.set_cell_item(mask_position,-1)
+		var mask:=preload("res://scenes/mask_in_map.tscn").instantiate()
+		level_items.add_child(mask)
+		mask.global_position=Vector3(mask_position)+Vector3(0.5,0.5,0.5)
+		mask.body_touched.connect(_on_body_touched_mask)
+
+func _on_body_touched_apple(body:Node3D,object:Node3D):
+	if body.get_instance_id()==player.get_instance_id():
+		absorb_apple(object.global_position)
+		object.queue_free()
+
+func _on_body_touched_life(body:Node3D,object:Node3D):
+	if body.get_instance_id()==player.get_instance_id():
+		absorb_life(object.global_position)
+		object.queue_free()
+
+func _on_body_touched_mask(body:Node3D,object:Node3D):
+	if body.get_instance_id()==player.get_instance_id():
+		absorb_mask(object.global_position)
+		object.queue_free()
+
+func absorb_apple(_object_position:Vector3):
+	pass
+
+func absorb_life(_object_position:Vector3):
+	pass
+
+func absorb_mask(_object_position:Vector3):
+	pass
 
 func _physics_process(_delta: float) -> void:
 	for block_position in player.get_spin_overlapping_block_positions():

@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://bqj7bgsk1gtui"]
+
+[ext_resource type="Texture2D" uid="uid://bfx34grm0ux10" path="res://assets/imgs/life.png" id="1_tf86k"]
+[ext_resource type="Script" uid="uid://dgjaqp7satenh" path="res://scripts/life.gd" id="1_vhvcv"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8ynh5"]
+
+[node name="Life" type="Area3D"]
+script = ExtResource("1_vhvcv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_8ynh5")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+unique_name_in_owner = true
+pixel_size = 0.0156
+texture = ExtResource("1_tf86k")
+
+[node name="GenerationTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+one_shot = true
+
+[node name="LevitationTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 2.0
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

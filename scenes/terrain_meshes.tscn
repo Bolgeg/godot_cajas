@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://btse06kddlbmh"]
+[gd_scene load_steps=25 format=3 uid="uid://btse06kddlbmh"]
 
 [ext_resource type="ArrayMesh" uid="uid://beck50vy4pgl5" path="res://assets/meshes/life_crate_Cube.res" id="3_277al"]
 [ext_resource type="ArrayMesh" uid="uid://bvip130ikhsi4" path="res://assets/meshes/mask_crate_Cube.res" id="4_2obls"]
@@ -19,7 +19,10 @@
 [ext_resource type="ArrayMesh" uid="uid://c6o5b4ii0ma0" path="res://assets/meshes/wireframe_crate_Cube.res" id="19_7v0kn"]
 [ext_resource type="ArrayMesh" uid="uid://82x0anl2a8he" path="res://assets/meshes/ice_Cube.res" id="20_w04dc"]
 [ext_resource type="ArrayMesh" uid="uid://bame661f5fcys" path="res://assets/meshes/wood_crate_Cube.res" id="20_ydnwn"]
+[ext_resource type="ArrayMesh" uid="uid://ctb45k4mxbtdr" path="res://assets/meshes/apple_Cube.res" id="21_kejif"]
 [ext_resource type="ArrayMesh" uid="uid://bvqga8cyfssg7" path="res://assets/meshes/snow_Cube.res" id="21_xklue"]
+[ext_resource type="ArrayMesh" uid="uid://basgi7wigcrpr" path="res://assets/meshes/life_Cube.res" id="22_l68cj"]
+[ext_resource type="ArrayMesh" uid="uid://dgshm2avvr0eo" path="res://assets/meshes/mask_Cube.res" id="23_eumu3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_c6yqp"]
 
@@ -217,3 +220,15 @@ mesh = ExtResource("21_xklue")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SnowCube/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
 shape = SubResource("BoxShape3D_c6yqp")
+
+[node name="AppleCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+mesh = ExtResource("21_kejif")
+
+[node name="LifeCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -10)
+mesh = ExtResource("22_l68cj")
+
+[node name="MaskCube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -10)
+mesh = ExtResource("23_eumu3")
