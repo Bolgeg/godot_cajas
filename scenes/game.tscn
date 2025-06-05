@@ -1,8 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://ckqyuudc45nb"]
+[gd_scene load_steps=12 format=3 uid="uid://ckqyuudc45nb"]
 
 [ext_resource type="Script" uid="uid://deu87cnx3m41d" path="res://scripts/game.gd" id="1_lnu2h"]
 [ext_resource type="PackedScene" uid="uid://bexeeutqnpi4a" path="res://scenes/level_1.tscn" id="1_uwrxv"]
 [ext_resource type="PackedScene" uid="uid://debcxbiw2ijtj" path="res://scenes/player.tscn" id="2_yqjtg"]
+[ext_resource type="Texture2D" uid="uid://wj8gxc73v183" path="res://assets/imgs/apple.png" id="4_lbhrr"]
+[ext_resource type="Script" uid="uid://dfhg5jcs74bu" path="res://scripts/item_container.gd" id="4_u5sy4"]
+[ext_resource type="Texture2D" uid="uid://bfx34grm0ux10" path="res://assets/imgs/life.png" id="5_iywne"]
+[ext_resource type="Texture2D" uid="uid://bshju1gvtag16" path="res://assets/imgs/crate.png" id="5_p57ef"]
 
 [sub_resource type="Environment" id="Environment_uwrxv"]
 background_mode = 1
@@ -11,6 +15,24 @@ ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
 ambient_light_energy = 0.7
 reflected_light_source = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_iywne"]
+font_size = 90
+font_color = Color(1, 1, 0, 1)
+outline_size = 32
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_u5sy4"]
+font_size = 90
+font_color = Color(1, 0.501961, 0, 1)
+outline_size = 32
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_p57ef"]
+font_size = 90
+font_color = Color(1, 0, 0, 1)
+outline_size = 32
+outline_color = Color(0, 0, 0, 1)
 
 [node name="Game" type="Node3D"]
 script = ExtResource("1_lnu2h")
@@ -30,5 +52,57 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 12)
+
+[node name="ItemLayer" type="CanvasLayer" parent="."]
+
+[node name="ItemContainer" type="Node2D" parent="ItemLayer"]
+unique_name_in_owner = true
+script = ExtResource("4_u5sy4")
+
+[node name="AppleSprite" type="Sprite2D" parent="ItemLayer/ItemContainer"]
+unique_name_in_owner = true
+position = Vector2(100, 64)
+scale = Vector2(2, 2)
+texture = ExtResource("4_lbhrr")
+hframes = 32
+
+[node name="AppleLabel" type="Label" parent="ItemLayer/ItemContainer"]
+unique_name_in_owner = true
+offset_left = 180.0
+offset_right = 283.0
+offset_bottom = 124.0
+text = "56"
+label_settings = SubResource("LabelSettings_iywne")
+
+[node name="CrateSprite" type="Sprite2D" parent="ItemLayer/ItemContainer"]
+position = Vector2(500, 64)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("5_p57ef")
+
+[node name="CrateLabel" type="Label" parent="ItemLayer/ItemContainer"]
+unique_name_in_owner = true
+offset_left = 580.0
+offset_right = 923.0
+offset_bottom = 124.0
+text = "102/156"
+label_settings = SubResource("LabelSettings_u5sy4")
+
+[node name="LifeSprite" type="Sprite2D" parent="ItemLayer/ItemContainer"]
+position = Vector2(1050, 64)
+scale = Vector2(2, 2)
+texture = ExtResource("5_iywne")
+
+[node name="LifeLabel" type="Label" parent="ItemLayer/ItemContainer"]
+unique_name_in_owner = true
+offset_left = 1130.0
+offset_right = 1233.0
+offset_bottom = 124.0
+text = "48"
+label_settings = SubResource("LabelSettings_p57ef")
+
+[node name="AppleAnimationTimer" type="Timer" parent="ItemLayer/ItemContainer"]
+unique_name_in_owner = true
+wait_time = 2.0
+autostart = true
 
 [connection signal="collided_with_block" from="Player" to="." method="_on_player_collided_with_block"]
