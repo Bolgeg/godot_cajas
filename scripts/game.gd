@@ -37,6 +37,8 @@ var crates:=0
 var crates_total:=0
 var lifes:=5
 
+var crate_data:={}
+
 func _ready() -> void:
 	level=$Level1
 	grid_map=level.get_child(0)
@@ -75,6 +77,8 @@ func process_map():
 			var crate_type=CRATE_TYPES[block_type]
 			if crate_type!="metal_crate" and crate_type!="metal_arrow_crate" and crate_type!="green_metal_crate":
 				crates_total+=1
+			if crate_type=="bounce_crate":
+				crate_data[block_position]=CrateData.new(10,0)
 
 func _on_body_touched_apple(body:Node3D,object:Node3D):
 	if body.get_instance_id()==player.get_instance_id():
@@ -106,6 +110,9 @@ func absorb_mask(_object_position:Vector3):
 	pass
 
 func _physics_process(_delta: float) -> void:
+	for block_position in crate_data:
+		crate_data[block_position].frame_apples_obtained=false
+	
 	for block_position in player.get_spin_overlapping_block_positions():
 		var block_type:=grid_map.get_cell_item(block_position)
 		if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
@@ -125,6 +132,7 @@ func break_crate_spinning(block_position:Vector3i,crate_type:String,_vertical_no
 			crate_drop_item(block_position,"mask")
 		"checkpoint_crate":
 			break_crate(block_position)
+			set_checkpoint(block_position)
 		"arrow_crate":
 			break_crate(block_position)
 			crate_drop_item(block_position,"apple")
@@ -143,15 +151,15 @@ func break_crate_spinning(block_position:Vector3i,crate_type:String,_vertical_no
 		"metal_crate":
 			pass
 		"metal_checkpoint_crate":
-			pass
+			activate_metal_crate(block_position)
 		"metal_arrow_crate":
 			pass
 		"metal_activator_crate":
-			pass
+			activate_metal_crate(block_position)
 		"green_metal_crate":
 			pass
 		"green_metal_detonator_crate":
-			pass
+			activate_metal_crate(block_position)
 		"wireframe_crate":
 			pass
 
@@ -174,6 +182,8 @@ func crate_drop_item(block_position:Vector3i,item_type:String,quantity:int=1):
 func break_crate(block_position:Vector3i):
 	grid_map.set_cell_item(block_position,-1)
 	count_crate_as_broken()
+	if block_position in crate_data:
+		crate_data.erase(block_position)
 
 func break_crate_bounce(block_position:Vector3i,vertical_normal:int)->bool:
 	bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
@@ -188,6 +198,28 @@ func get_crate_type(block_position:Vector3i)->String:
 	if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
 		return CRATE_TYPES[block_type]
 	return ""
+
+func set_checkpoint(_block_position:Vector3i):
+	pass
+
+func detonate_all_nitro_crates():
+	pass
+
+func activate_crates():
+	pass
+
+func activate_metal_crate(block_position:Vector3i):
+	var crate_type:=get_crate_type(block_position)
+	match crate_type:
+		"metal_checkpoint_crate":
+			set_checkpoint(block_position+Vector3i.UP)
+			grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+		"metal_activator_crate":
+			activate_crates()
+			grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+		"green_metal_detonator_crate":
+			detonate_all_nitro_crates()
+			grid_map.set_cell_item(block_position,CRATE_TYPES.find("green_metal_crate"))
 
 func bounce_crate(_block_position:Vector3i,mode:String):
 	match mode:
@@ -227,7 +259,7 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 				"checkpoint_crate":
 					if vertical_normal!=0:
 						if break_crate_bounce(block_position,vertical_normal):
-							pass
+							set_checkpoint(block_position)
 				"arrow_crate":
 					if vertical_normal!=0:
 						if vertical_normal>0:
@@ -238,6 +270,16 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 				"bounce_crate":
 					if vertical_normal!=0:
 						bounce_crate(block_position,"arrow_bounce" if vertical_normal>0 else "bounce_down")
+						if block_position in crate_data:
+							if not crate_data[block_position].frame_apples_obtained:
+								if crate_data[block_position].apples_left>0:
+									crate_drop_item(block_position,"apple",2)
+									crate_data[block_position].apples_left-=2
+								crate_data[block_position].frame_apples_obtained=true
+								if crate_data[block_position].apples_left<=0:
+									break_crate(block_position)
+						else:
+							break_crate(block_position)
 				"nitro_crate":
 					break_crate(block_position)
 				"tnt_crate":
@@ -254,16 +296,19 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 				"metal_checkpoint_crate":
 					if vertical_normal!=0:
 						bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
+						activate_metal_crate(block_position)
 				"metal_arrow_crate":
 					if vertical_normal>0:
 						bounce_crate(block_position,"arrow_bounce")
 				"metal_activator_crate":
 					if vertical_normal!=0:
 						bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
+						activate_metal_crate(block_position)
 				"green_metal_crate":
 					pass
 				"green_metal_detonator_crate":
 					if vertical_normal!=0:
 						bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
+						activate_metal_crate(block_position)
 				"wireframe_crate":
 					pass
