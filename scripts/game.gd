@@ -31,6 +31,7 @@ const MASK_BLOCK_INDEX:=22
 var level:Node3D
 var grid_map:GridMap
 var level_items:Node3D
+var level_explosions:Node3D
 
 var apples:=0
 var crates:=0
@@ -41,8 +42,9 @@ var crate_data:={}
 
 func _ready() -> void:
 	level=$Level1
-	grid_map=level.get_child(0)
-	level_items=level.get_child(1)
+	grid_map=level.find_child("GridMap")
+	level_items=level.find_child("Items")
+	level_explosions=level.find_child("Explosions")
 	process_map()
 
 func _process(_delta: float) -> void:
@@ -109,7 +111,15 @@ func absorb_life(_object_position:Vector3):
 func absorb_mask(_object_position:Vector3):
 	pass
 
-func _physics_process(_delta: float) -> void:
+func _on_body_touched_explosion(body:Node3D,_object:Node3D):
+	if body.get_instance_id()==player.get_instance_id():
+		pass
+
+func _on_area_touched_explosion(area:Area3D,_object:Node3D):
+	if area in level_items.get_children():
+		area.queue_free()
+
+func _physics_process(delta: float) -> void:
 	for block_position in crate_data:
 		crate_data[block_position].frame_apples_obtained=false
 	
@@ -118,6 +128,70 @@ func _physics_process(_delta: float) -> void:
 		if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
 			var crate_type=CRATE_TYPES[block_type]
 			break_crate_spinning(block_position,crate_type,0)
+	
+	for block_position in crate_data:
+		if crate_data[block_position].tnt_countdown>0:
+			crate_data[block_position].tnt_countdown-=delta
+			if crate_data[block_position].tnt_countdown<=0:
+				break_crate(block_position)
+			else:
+				match int(floor(crate_data[block_position].tnt_countdown)):
+					1:
+						grid_map.set_cell_item(block_position,CRATE_TYPES.find("tnt_crate_2"))
+					0:
+						grid_map.set_cell_item(block_position,CRATE_TYPES.find("tnt_crate_1"))
+	
+	for explosion in level_explosions.get_children():
+		var center:Vector3=explosion.global_position
+		var radius:float=explosion.radius
+		var minimum:=Vector3i((center-Vector3(radius,radius,radius)).floor())
+		var maximum:=Vector3i((center+Vector3(radius,radius,radius)).ceil())+Vector3i(1,1,1)
+		for z in range(minimum.z,maximum.z):
+			for y in range(minimum.y,maximum.y):
+				for x in range(minimum.x,maximum.x):
+					var block_position:=Vector3i(x,y,z)
+					var block_center:=Vector3(block_position)+Vector3(0.5,0.5,0.5)
+					if center.distance_to(block_center)<=radius:
+						var crate_type:=get_crate_type(block_position)
+						if crate_type!="":
+							match crate_type:
+								"wood_crate":
+									break_crate(block_position)
+								"life_crate":
+									break_crate(block_position)
+								"mask_crate":
+									break_crate(block_position)
+								"checkpoint_crate":
+									break_crate(block_position)
+									set_checkpoint(block_position)
+								"arrow_crate":
+									break_crate(block_position)
+								"bounce_crate":
+									break_crate(block_position)
+								"nitro_crate":
+									break_crate(block_position)
+								"tnt_crate":
+									break_crate(block_position)
+								"tnt_crate_3":
+									break_crate(block_position)
+								"tnt_crate_2":
+									break_crate(block_position)
+								"tnt_crate_1":
+									break_crate(block_position)
+								"metal_crate":
+									pass
+								"metal_checkpoint_crate":
+									activate_metal_crate(block_position)
+								"metal_arrow_crate":
+									pass
+								"metal_activator_crate":
+									activate_metal_crate(block_position)
+								"green_metal_crate":
+									pass
+								"green_metal_detonator_crate":
+									activate_metal_crate(block_position)
+								"wireframe_crate":
+									pass
 
 func break_crate_spinning(block_position:Vector3i,crate_type:String,_vertical_normal:int):
 	match crate_type:
@@ -179,11 +253,36 @@ func crate_drop_item(block_position:Vector3i,item_type:String,quantity:int=1):
 			for i in range(quantity):
 				absorb_mask(block_center)
 
+func get_crate_type(block_position:Vector3i)->String:
+	var block_type:=grid_map.get_cell_item(block_position)
+	if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
+		return CRATE_TYPES[block_type]
+	return ""
+
+func create_explosion(center:Vector3,color:Color):
+	var explosion:=preload("res://scenes/explosion.tscn").instantiate()
+	explosion.set_explosion_color(color)
+	explosion.position=center
+	explosion.body_touched.connect(_on_body_touched_explosion)
+	explosion.area_touched.connect(_on_area_touched_explosion)
+	level_explosions.add_child(explosion)
+
+func activate_tnt(block_position:Vector3i):
+	crate_data[block_position]=CrateData.new(0,3)
+	grid_map.set_cell_item(block_position,CRATE_TYPES.find("tnt_crate_3"))
+
 func break_crate(block_position:Vector3i):
+	var crate_type:=get_crate_type(block_position)
 	grid_map.set_cell_item(block_position,-1)
 	count_crate_as_broken()
 	if block_position in crate_data:
 		crate_data.erase(block_position)
+	if(crate_type=="nitro_crate" or crate_type=="tnt_crate" or
+		crate_type=="tnt_crate_3" or crate_type=="tnt_crate_2" or crate_type=="tnt_crate_1"):
+		create_explosion(
+			Vector3(block_position)+Vector3(0.5,0.5,0.5),
+			Color.from_rgba8(0,255,0) if crate_type=="nitro_crate" else Color.from_rgba8(255,0,0)
+			)
 
 func break_crate_bounce(block_position:Vector3i,vertical_normal:int)->bool:
 	bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
@@ -193,17 +292,12 @@ func break_crate_bounce(block_position:Vector3i,vertical_normal:int)->bool:
 		return true
 	return false
 
-func get_crate_type(block_position:Vector3i)->String:
-	var block_type:=grid_map.get_cell_item(block_position)
-	if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
-		return CRATE_TYPES[block_type]
-	return ""
-
 func set_checkpoint(_block_position:Vector3i):
 	pass
 
 func detonate_all_nitro_crates():
-	pass
+	for block_position in grid_map.get_used_cells_by_item(CRATE_TYPES.find("nitro_crate")):
+		break_crate(block_position)
 
 func activate_crates():
 	pass
@@ -285,6 +379,7 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 				"tnt_crate":
 					if vertical_normal!=0:
 						bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
+						activate_tnt(block_position)
 				"tnt_crate_3":
 					pass
 				"tnt_crate_2":

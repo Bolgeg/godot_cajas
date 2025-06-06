@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://d1vvmsubs21gx"]
+
+[ext_resource type="Script" uid="uid://c7bogh0hysylu" path="res://scripts/explosion.gd" id="1_17npe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3oo6d"]
+shading_mode = 0
+vertex_color_use_as_albedo = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_17npe"]
+material = SubResource("StandardMaterial3D_3oo6d")
+size = Vector3(0.3, 0.3, 0.3)
+
+[sub_resource type="Curve" id="Curve_3oo6d"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.0958084, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_17npe"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_17npe"]
+resource_local_to_scene = true
+radius = 1.0
+
+[node name="Explosion" type="CPUParticles3D"]
+emitting = false
+amount = 64
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+mesh = SubResource("BoxMesh_17npe")
+emission_shape = 2
+emission_sphere_radius = 0.01
+direction = Vector3(0, 0, 0)
+spread = 90.0
+gravity = Vector3(0, 0, 0)
+radial_accel_min = 1000.0
+radial_accel_max = 1000.0
+radial_accel_curve = SubResource("Curve_3oo6d")
+scale_amount_curve = SubResource("Curve_17npe")
+script = ExtResource("1_17npe")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+unique_name_in_owner = true
+shape = SubResource("SphereShape3D_17npe")
+
+[node name="Timer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 0.5
+one_shot = true
+
+[connection signal="area_entered" from="Area3D" to="." method="_on_area_3d_area_entered"]
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
