@@ -28,6 +28,22 @@ var crate_broken_by_jumping:=false
 func _ready() -> void:
 	update_animation_sprite(0)
 
+func reset():
+	spin_timer.stop()
+	spin_cooldown_timer.stop()
+	
+	current_animation="idle"
+	animation_progress=0.0
+
+	orientation_right=true
+	
+	spinning=false
+	
+	bouncing=false
+	crate_broken_by_jumping=false
+	
+	update_animation_sprite(0)
+
 func bounce(bounce_velocity:float):
 	bouncing=true
 	velocity.y=bounce_velocity

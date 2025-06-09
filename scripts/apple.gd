@@ -2,6 +2,8 @@ extends Area3D
 
 signal body_touched(body:Node3D,object:Node3D)
 
+var block_position:=Vector3i(0,0,0)
+
 func _ready() -> void:
 	%GenerationTimer.start()
 

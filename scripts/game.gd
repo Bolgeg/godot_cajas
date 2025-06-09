@@ -2,6 +2,7 @@ extends Node3D
 
 @onready var player:=%Player
 @onready var item_container:=%ItemContainer
+@onready var death_timer:=%DeathTimer
 
 const CRATE_TYPES:=[
 	"wood_crate",
@@ -40,20 +41,103 @@ var lifes:=5
 
 var crate_data:={}
 
+
+var initial_grid_map:GridMap
+
+var removed_blocks:=[]
+
+var checkpoint_removed_blocks:=[]
+var checkpoint_crates:=0
+var checkpoint_block_position:=Vector3i(0,0,0)
+
 func _ready() -> void:
 	level=$Level1
 	grid_map=level.find_child("GridMap")
+	
+	initial_grid_map=grid_map.duplicate()
+	initial_grid_map.process_mode=Node.PROCESS_MODE_DISABLED
+	
 	level_items=level.find_child("Items")
 	level_explosions=level.find_child("Explosions")
 	process_map()
+	save_checkpoint(Vector3i(player.global_position.floor()))
 
 func _process(_delta: float) -> void:
 	item_container.update(apples,crates,crates_total,lifes)
 
-func process_map():
+func save_checkpoint(block_position:Vector3i):
+	checkpoint_removed_blocks=removed_blocks.duplicate(true)
+	checkpoint_crates=crates
+	checkpoint_block_position=block_position
+
+func load_checkpoint():
+	grid_map.free()
+	grid_map=initial_grid_map.duplicate()
+	grid_map.process_mode=Node.PROCESS_MODE_INHERIT
+	level.add_child(grid_map)
+	
+	for child in level_items.get_children():
+		child.queue_free()
+	
+	remove_checkpoint_removed_blocks()
+	removed_blocks=checkpoint_removed_blocks.duplicate(true)
+	
+	process_map(true)
+	
+	crates=checkpoint_crates
+	
+	player.reset()
+	player.global_position=Vector3(checkpoint_block_position)
+
+func remove_checkpoint_removed_blocks():
+	for block_position in checkpoint_removed_blocks:
+		var crate_type:=get_crate_type(block_position)
+		match crate_type:
+			"wood_crate":
+				break_crate(block_position,true)
+			"life_crate":
+				break_crate(block_position,true)
+			"mask_crate":
+				break_crate(block_position,true)
+			"checkpoint_crate":
+				break_crate(block_position,true)
+			"arrow_crate":
+				break_crate(block_position,true)
+			"bounce_crate":
+				break_crate(block_position,true)
+			"nitro_crate":
+				break_crate(block_position,true)
+			"tnt_crate":
+				break_crate(block_position,true)
+			"tnt_crate_3":
+				break_crate(block_position,true)
+			"tnt_crate_2":
+				break_crate(block_position,true)
+			"tnt_crate_1":
+				break_crate(block_position,true)
+			"metal_crate":
+				pass
+			"metal_checkpoint_crate":
+				grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+			"metal_arrow_crate":
+				pass
+			"metal_activator_crate":
+				grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+				activate_crates()
+			"green_metal_crate":
+				pass
+			"green_metal_detonator_crate":
+				grid_map.set_cell_item(block_position,CRATE_TYPES.find("green_metal_crate"))
+			"wireframe_crate":
+				pass
+			_:
+				grid_map.set_cell_item(block_position,-1)
+
+func process_map(checkpoint:bool=false):
 	for apple_position in grid_map.get_used_cells_by_item(APPLE_BLOCK_INDEX):
 		grid_map.set_cell_item(apple_position,-1)
 		var apple:=preload("res://scenes/apple.tscn").instantiate()
+		apple.block_position=apple_position
 		level_items.add_child(apple)
 		apple.global_position=Vector3(apple_position)+Vector3(0.5,0.5,0.5)
 		apple.body_touched.connect(_on_body_touched_apple)
@@ -61,6 +145,7 @@ func process_map():
 	for life_position in grid_map.get_used_cells_by_item(LIFE_BLOCK_INDEX):
 		grid_map.set_cell_item(life_position,-1)
 		var life:=preload("res://scenes/life.tscn").instantiate()
+		life.block_position=life_position
 		level_items.add_child(life)
 		life.global_position=Vector3(life_position)+Vector3(0.5,0.5,0.5)
 		life.body_touched.connect(_on_body_touched_life)
@@ -68,32 +153,42 @@ func process_map():
 	for mask_position in grid_map.get_used_cells_by_item(MASK_BLOCK_INDEX):
 		grid_map.set_cell_item(mask_position,-1)
 		var mask:=preload("res://scenes/mask_in_map.tscn").instantiate()
+		mask.block_position=mask_position
 		level_items.add_child(mask)
 		mask.global_position=Vector3(mask_position)+Vector3(0.5,0.5,0.5)
 		mask.body_touched.connect(_on_body_touched_mask)
 	
-	crates_total=0
+	if not checkpoint:
+		crates_total=0
 	for block_position in grid_map.get_used_cells():
 		var block_type:=grid_map.get_cell_item(block_position)
 		if block_type!=GridMap.INVALID_CELL_ITEM and block_type<CRATE_TYPES.size():
 			var crate_type=CRATE_TYPES[block_type]
-			if crate_type!="metal_crate" and crate_type!="metal_arrow_crate" and crate_type!="green_metal_crate":
-				crates_total+=1
+			if not checkpoint:
+				if(
+					crate_type!="metal_crate" and crate_type!="metal_arrow_crate"
+					and crate_type!="green_metal_crate" and crate_type!="metal_checkpoint_crate"
+					and crate_type!="metal_activator_crate" and crate_type!="green_metal_detonator_crate"
+					):
+					crates_total+=1
 			if crate_type=="bounce_crate":
 				crate_data[block_position]=CrateData.new(10,0)
 
 func _on_body_touched_apple(body:Node3D,object:Node3D):
 	if body.get_instance_id()==player.get_instance_id():
+		removed_blocks.append(object.block_position)
 		absorb_apple(object.global_position)
 		object.queue_free()
 
 func _on_body_touched_life(body:Node3D,object:Node3D):
 	if body.get_instance_id()==player.get_instance_id():
+		removed_blocks.append(object.block_position)
 		absorb_life(object.global_position)
 		object.queue_free()
 
 func _on_body_touched_mask(body:Node3D,object:Node3D):
 	if body.get_instance_id()==player.get_instance_id():
+		removed_blocks.append(object.block_position)
 		absorb_mask(object.global_position)
 		object.queue_free()
 
@@ -111,9 +206,15 @@ func absorb_life(_object_position:Vector3):
 func absorb_mask(_object_position:Vector3):
 	pass
 
+func player_die():
+	player.process_mode=Node.PROCESS_MODE_DISABLED
+	player.visible=false
+	death_timer.start()
+
 func _on_body_touched_explosion(body:Node3D,_object:Node3D):
 	if body.get_instance_id()==player.get_instance_id():
-		pass
+		if death_timer.is_stopped():
+			player_die()
 
 func _on_area_touched_explosion(area:Area3D,_object:Node3D):
 	if area in level_items.get_children():
@@ -271,18 +372,20 @@ func activate_tnt(block_position:Vector3i):
 	crate_data[block_position]=CrateData.new(0,3)
 	grid_map.set_cell_item(block_position,CRATE_TYPES.find("tnt_crate_3"))
 
-func break_crate(block_position:Vector3i):
+func break_crate(block_position:Vector3i,checkpoint:bool=false):
 	var crate_type:=get_crate_type(block_position)
 	grid_map.set_cell_item(block_position,-1)
-	count_crate_as_broken()
-	if block_position in crate_data:
-		crate_data.erase(block_position)
-	if(crate_type=="nitro_crate" or crate_type=="tnt_crate" or
-		crate_type=="tnt_crate_3" or crate_type=="tnt_crate_2" or crate_type=="tnt_crate_1"):
-		create_explosion(
-			Vector3(block_position)+Vector3(0.5,0.5,0.5),
-			Color.from_rgba8(0,255,0) if crate_type=="nitro_crate" else Color.from_rgba8(255,0,0)
-			)
+	if not checkpoint:
+		count_crate_as_broken()
+		removed_blocks.append(block_position)
+		if block_position in crate_data:
+			crate_data.erase(block_position)
+		if(crate_type=="nitro_crate" or crate_type=="tnt_crate" or
+			crate_type=="tnt_crate_3" or crate_type=="tnt_crate_2" or crate_type=="tnt_crate_1"):
+			create_explosion(
+				Vector3(block_position)+Vector3(0.5,0.5,0.5),
+				Color.from_rgba8(0,255,0) if crate_type=="nitro_crate" else Color.from_rgba8(255,0,0)
+				)
 
 func break_crate_bounce(block_position:Vector3i,vertical_normal:int)->bool:
 	bounce_crate(block_position,"crate_bounce" if vertical_normal>0 else "bounce_down")
@@ -292,8 +395,8 @@ func break_crate_bounce(block_position:Vector3i,vertical_normal:int)->bool:
 		return true
 	return false
 
-func set_checkpoint(_block_position:Vector3i):
-	pass
+func set_checkpoint(block_position:Vector3i):
+	save_checkpoint(block_position)
 
 func detonate_all_nitro_crates():
 	for block_position in grid_map.get_used_cells_by_item(CRATE_TYPES.find("nitro_crate")):
@@ -308,12 +411,15 @@ func activate_metal_crate(block_position:Vector3i):
 		"metal_checkpoint_crate":
 			set_checkpoint(block_position+Vector3i.UP)
 			grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+			removed_blocks.append(block_position)
 		"metal_activator_crate":
 			activate_crates()
 			grid_map.set_cell_item(block_position,CRATE_TYPES.find("metal_crate"))
+			removed_blocks.append(block_position)
 		"green_metal_detonator_crate":
 			detonate_all_nitro_crates()
 			grid_map.set_cell_item(block_position,CRATE_TYPES.find("green_metal_crate"))
+			removed_blocks.append(block_position)
 
 func bounce_crate(_block_position:Vector3i,mode:String):
 	match mode:
@@ -407,3 +513,9 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 						activate_metal_crate(block_position)
 				"wireframe_crate":
 					pass
+
+func _on_death_timer_timeout() -> void:
+	lifes-=1
+	load_checkpoint()
+	player.process_mode=Node.PROCESS_MODE_INHERIT
+	player.visible=true
