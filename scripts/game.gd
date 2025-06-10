@@ -1,5 +1,8 @@
 extends Node3D
 
+signal won
+signal lost
+
 @onready var player:=%Player
 @onready var item_container:=%ItemContainer
 @onready var death_timer:=%DeathTimer
@@ -129,7 +132,7 @@ func remove_checkpoint_removed_blocks():
 			"green_metal_detonator_crate":
 				grid_map.set_cell_item(block_position,CRATE_TYPES.find("green_metal_crate"))
 			"wireframe_crate":
-				pass
+				grid_map.set_cell_item(block_position,-1)
 			_:
 				grid_map.set_cell_item(block_position,-1)
 
@@ -293,6 +296,8 @@ func _physics_process(delta: float) -> void:
 									activate_metal_crate(block_position)
 								"wireframe_crate":
 									pass
+	
+	check_all_crates_broken()
 
 func break_crate_spinning(block_position:Vector3i,crate_type:String,_vertical_normal:int):
 	match crate_type:
@@ -403,7 +408,8 @@ func detonate_all_nitro_crates():
 		break_crate(block_position)
 
 func activate_crates():
-	pass
+	for block_position in grid_map.get_used_cells_by_item(CRATE_TYPES.find("wireframe_crate")):
+		grid_map.set_cell_item(block_position,CRATE_TYPES.find("wood_crate"))
 
 func activate_metal_crate(block_position:Vector3i):
 	var crate_type:=get_crate_type(block_position)
@@ -514,8 +520,15 @@ func _on_player_collided_with_block(block_position:Vector3i,vertical_normal:int)
 				"wireframe_crate":
 					pass
 
+func check_all_crates_broken():
+	if crates>=crates_total:
+		won.emit()
+
 func _on_death_timer_timeout() -> void:
 	lifes-=1
-	load_checkpoint()
-	player.process_mode=Node.PROCESS_MODE_INHERIT
-	player.visible=true
+	if lifes<0:
+		lost.emit()
+	else:
+		load_checkpoint()
+		player.process_mode=Node.PROCESS_MODE_INHERIT
+		player.visible=true

@@ -1,0 +1,89 @@
+[gd_scene load_steps=7 format=3 uid="uid://b1pu33nbraxdu"]
+
+[ext_resource type="Script" uid="uid://c1gcq6h33l8e0" path="res://scripts/full_game.gd" id="1_k4mkr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k4mkr"]
+bg_color = Color(0.393086, 0.393086, 0.393085, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="LabelSettings" id="LabelSettings_k4mkr"]
+resource_local_to_scene = true
+font_size = 64
+outline_size = 16
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8mwf"]
+bg_color = Color(0.752941, 0.752941, 0.752941, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0mt7r"]
+bg_color = Color(0.439216, 0.439216, 0.439216, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_537tr"]
+bg_color = Color(0.627451, 0.627451, 0.627451, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[node name="FullGame" type="Node3D"]
+script = ExtResource("1_k4mkr")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="MessagePanelContainer" type="PanelContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_k4mkr")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MessagePanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MessagePanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="MessageLabel" type="Label" parent="CanvasLayer/MessagePanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "YOU HAVE WON!"
+label_settings = SubResource("LabelSettings_k4mkr")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/MessagePanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 32
+theme_override_styles/hover = SubResource("StyleBoxFlat_n8mwf")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_0mt7r")
+theme_override_styles/normal = SubResource("StyleBoxFlat_537tr")
+text = "Play again"
+
+[connection signal="pressed" from="CanvasLayer/MessagePanelContainer/MarginContainer/VBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]
